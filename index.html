@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Alexandria Quantum Hackathon — Jury Evaluation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:        #050a12;
+    --surface:   #0b1422;
+    --card:      #0f1e30;
+    --border:    #1a3050;
+    --cyan:      #00d4ff;
+    --cyan-dim:  #0099bb;
+    --gold:      #ffd166;
+    --green:     #06ffa5;
+    --red:       #ff4d6d;
+    --text:      #c8dff0;
+    --muted:     #4a6a85;
+    --font-head: 'Syne', sans-serif;
+    --font-mono: 'Share Tech Mono', monospace;
+    --glow: 0 0 20px rgba(0,212,255,.35), 0 0 60px rgba(0,212,255,.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font-head);overflow-x:hidden}
+
+  /* ── GRID BACKGROUND ── */
+  body::before{
+    content:'';position:fixed;inset:0;z-index:0;
+    background-image:
+      linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);
+    background-size:40px 40px;
+    pointer-events:none;
+  }
+
+  /* ── LAYOUT ── */
+  #app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px 60px}
+
+  /* ── HEADER ── */
+  .site-header{width:100%;max-width:760px;text-align:center;padding:40px 0 32px}
+  .header-badge{
+    display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:3px;
+    color:var(--cyan);border:1px solid var(--cyan);padding:4px 14px;border-radius:2px;
+    margin-bottom:20px;text-transform:uppercase;
+    box-shadow:0 0 12px rgba(0,212,255,.2);
+  }
+  .site-header h1{
+    font-size:clamp(24px,5vw,42px);font-weight:800;letter-spacing:-1px;line-height:1.1;
+    background:linear-gradient(120deg,#fff 30%,var(--cyan));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+  .site-header p{margin-top:10px;color:var(--muted);font-size:14px;font-family:var(--font-mono)}
+
+  /* ── CARD ── */
+  .card{
+    width:100%;max-width:760px;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;padding:36px 40px;
+    box-shadow:0 8px 48px rgba(0,0,0,.5);
+  }
+  @media(max-width:520px){.card{padding:24px 18px}}
+
+  /* ── SCREENS ── */
+  .screen{display:none;animation:fadeUp .35s ease both}
+  .screen.active{display:block}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ── SECTION TITLE ── */
+  .section-title{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--cyan);
+    text-transform:uppercase;margin-bottom:24px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+  /* ── FORM ELEMENTS ── */
+  label{display:block;font-size:13px;font-family:var(--font-mono);color:var(--muted);margin-bottom:6px;letter-spacing:.5px}
+  input[type=text],input[type=number],textarea{
+    width:100%;background:var(--surface);border:1px solid var(--border);
+    color:#fff;font-family:var(--font-mono);font-size:15px;
+    padding:12px 16px;border-radius:6px;outline:none;transition:border-color .2s,box-shadow .2s;
+  }
+  input[type=text]:focus,input[type=number]:focus,textarea:focus{
+    border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,212,255,.12);
+  }
+  textarea{resize:vertical;min-height:90px}
+  .form-row{margin-bottom:22px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:480px){.form-grid{grid-template-columns:1fr}}
+
+  /* ── STAR RATING ── */
+  .criteria-list{display:flex;flex-direction:column;gap:0}
+  .criteria-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 0;border-bottom:1px solid var(--border);gap:12px;
+  }
+  .criteria-row:last-child{border-bottom:none}
+  .criteria-name{font-size:14px;font-weight:600;flex:1;min-width:0;padding-right:12px}
+  .criteria-name span{display:block;font-size:11px;font-family:var(--font-mono);color:var(--muted);font-weight:400;margin-top:2px}
+  .stars{display:flex;gap:6px;flex-shrink:0}
+  .stars input[type=radio]{display:none}
+  .stars label{
+    cursor:pointer;font-size:22px;color:var(--border);
+    transition:color .15s,transform .15s;user-select:none;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .stars:hover label{color:var(--gold)}
+  .stars label:hover ~ label{color:var(--border)!important}
+  .stars input[type=radio]:checked ~ label{color:var(--border)}
+  .stars input[type=radio]:checked + label,
+  .stars input[type=radio]:checked ~ input:checked + label{color:var(--gold)}
+
+  /* RTL star fix — stars go 5→1 visually via flex-direction:row-reverse */
+  .stars{flex-direction:row-reverse}
+  .stars label:hover,
+  .stars label:hover ~ label{color:var(--gold)!important}
+  .stars input[type=radio]:checked + label{color:var(--gold)!important}
+  .stars input[type=radio]:checked ~ label{color:var(--border)!important}
+  /* override so everything up to checked is filled */
+  .stars{direction:ltr}
+
+  .score-label{
+    font-family:var(--font-mono);font-size:10px;color:var(--muted);
+    width:20px;text-align:center;flex-shrink:0;
+  }
+
+  /* ── BUTTONS ── */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    font-family:var(--font-head);font-weight:700;font-size:15px;
+    padding:13px 28px;border-radius:6px;border:none;cursor:pointer;
+    transition:all .2s;letter-spacing:.3px;
+  }
+  .btn-primary{
+    background:var(--cyan);color:#050a12;
+    box-shadow:var(--glow);
+  }
+  .btn-primary:hover{background:#33ddff;transform:translateY(-1px)}
+  .btn-primary:active{transform:none}
+  .btn-ghost{
+    background:transparent;color:var(--cyan);
+    border:1px solid var(--cyan);
+  }
+  .btn-ghost:hover{background:rgba(0,212,255,.08)}
+  .btn-danger{
+    background:transparent;color:var(--red);
+    border:1px solid var(--red);font-size:13px;padding:8px 16px;
+  }
+  .btn-danger:hover{background:rgba(255,77,109,.08)}
+  .btn-green{background:var(--green);color:#050a12;box-shadow:0 0 20px rgba(6,255,165,.3)}
+  .btn-green:hover{background:#33ffb8;transform:translateY(-1px)}
+  .btn-row{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-top:28px;flex-wrap:wrap}
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap{width:100%;max-width:760px;margin-bottom:20px}
+  .progress-steps{display:flex;gap:8px;margin-bottom:8px}
+  .step-dot{
+    height:4px;flex:1;border-radius:2px;background:var(--border);
+    transition:background .3s;
+  }
+  .step-dot.done{background:var(--cyan)}
+  .step-label{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+
+  /* ── VALIDATION ── */
+  .error-msg{color:var(--red);font-family:var(--font-mono);font-size:12px;margin-top:6px;display:none}
+  .field-error input,.field-error textarea{border-color:var(--red)}
+  .field-error .error-msg{display:block}
+
+  /* ── SUBMISSION COUNT BADGE ── */
+  .sub-count{
+    display:flex;align-items:center;gap:10px;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:8px;padding:10px 16px;margin-bottom:28px;
+    font-family:var(--font-mono);font-size:13px;
+  }
+  .sub-count .num{font-size:22px;font-weight:700;color:var(--cyan)}
+
+  /* ── RESULTS TABLE ── */
+  .results-table{width:100%;border-collapse:collapse;margin-top:12px}
+  .results-table th{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:2px;
+    color:var(--muted);text-transform:uppercase;padding:10px 14px;
+    border-bottom:1px solid var(--border);text-align:left;
+  }
+  .results-table td{
+    padding:13px 14px;border-bottom:1px solid rgba(26,48,80,.5);
+    font-size:15px;
+  }
+  .results-table tr:hover td{background:rgba(0,212,255,.04)}
+  .rank-badge{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:28px;height:28px;border-radius:50%;font-weight:800;font-size:13px;
+    background:var(--border);color:var(--text);
+  }
+  .rank-badge.gold{background:var(--gold);color:#050a12}
+  .rank-badge.silver{background:#a8c0cc;color:#050a12}
+  .rank-badge.bronze{background:#cd7c4a;color:#fff}
+  .score-bar-wrap{display:flex;align-items:center;gap:10px}
+  .score-bar{height:6px;border-radius:3px;background:var(--border);flex:1;overflow:hidden}
+  .score-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:width .8s ease}
+  .score-num{font-family:var(--font-mono);font-size:14px;color:var(--cyan);min-width:36px;text-align:right}
+  .criteria-breakdown{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:10px;margin-top:16px;
+  }
+  .cb-item{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:6px;padding:10px 12px;
+  }
+  .cb-item .cb-name{font-size:11px;font-family:var(--font-mono);color:var(--muted);margin-bottom:4px}
+  .cb-item .cb-val{font-size:20px;font-weight:700;color:var(--cyan)}
+  .cb-item .cb-max{font-size:11px;color:var(--muted);font-family:var(--font-mono)}/5
+
+  .team-section{margin-bottom:28px}
+  .team-header{
+    display:flex;align-items:center;gap:12px;cursor:pointer;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:8px;padding:14px 18px;margin-bottom:4px;
+    user-select:none;
+  }
+  .team-header:hover{border-color:var(--cyan-dim)}
+  .team-num{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+  .team-name-big{font-size:16px;font-weight:700;flex:1}
+  .chevron{font-size:14px;color:var(--muted);transition:transform .2s}
+  .team-section.open .chevron{transform:rotate(180deg)}
+  .team-detail{display:none;padding:16px;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;background:rgba(15,30,48,.5)}
+  .team-section.open .team-detail{display:block}
+
+  /* ── TOAST ── */
+  #toast{
+    position:fixed;bottom:28px;right:28px;z-index:999;
+    background:var(--green);color:#050a12;
+    font-family:var(--font-mono);font-size:13px;font-weight:700;
+    padding:12px 22px;border-radius:6px;
+    transform:translateY(80px);opacity:0;transition:all .3s;
+    pointer-events:none;
+  }
+  #toast.show{transform:none;opacity:1}
+
+  /* ── EMPTY STATE ── */
+  .empty-state{text-align:center;padding:40px;color:var(--muted);font-family:var(--font-mono);font-size:13px}
+  .empty-state .icon{font-size:40px;margin-bottom:12px;display:block}
+
+  /* ── EXPORT ── */
+  .export-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+
+  /* ── CONFETTI PLACEHOLDER ── */
+  .winner-banner{
+    text-align:center;padding:28px;
+    background:linear-gradient(135deg,rgba(255,209,102,.1),rgba(0,212,255,.1));
+    border:1px solid var(--gold);border-radius:10px;margin-bottom:24px;
+  }
+  .winner-banner .trophy{font-size:48px;display:block;margin-bottom:8px}
+  .winner-banner h2{font-size:22px;font-weight:800;color:var(--gold)}
+  .winner-banner p{font-family:var(--font-mono);font-size:13px;color:var(--muted);margin-top:4px}
+
+  /* scrollable results on mobile */
+  .table-wrap{overflow-x:auto}
+
+  /* nav back link */
+  .back-link{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:var(--font-mono);font-size:12px;color:var(--muted);
+    cursor:pointer;margin-bottom:20px;text-decoration:none;
+    transition:color .2s;
+  }
+  .back-link:hover{color:var(--cyan)}
+
+  /* admin access */
+  .admin-pin-wrap{display:flex;gap:8px;align-items:center}
+  .admin-pin-wrap input{max-width:120px}
+
+  /* jury list in results */
+  .jury-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .jury-tag{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:4px;padding:3px 8px;
+    font-family:var(--font-mono);font-size:11px;color:var(--muted);
+  }
+
+  /* spinner */
+  .spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(0,212,255,.3);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-badge">Alexandria · 2026</div>
+    <h1>Mini Quantum Hackathon<br/>Jury Evaluation System</h1>
+    <p id="header-sub">Loading submissions…</p>
+  </header>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progress-wrap" style="display:none">
+    <div class="progress-steps">
+      <div class="step-dot" id="dot-1"></div>
+      <div class="step-dot" id="dot-2"></div>
+      <div class="step-dot" id="dot-3"></div>
+    </div>
+    <div class="step-label" id="step-label"></div>
+  </div>
+
+  <!-- ═══════════════════════════════ SCREEN 1: IDENTITY ═══ -->
+  <div class="card screen" id="screen-identity">
+    <div class="section-title">Jury Member Login</div>
+    <div class="form-grid">
+      <div class="form-row" id="wrap-name">
+        <label>Full Name *</label>
+        <input type="text" id="jury-name" placeholder="e.g. Dr. Ahmed Hassan" autocomplete="off"/>
+        <div class="error-msg">Please enter your name.</div>
+      </div>
+      <div class="form-row" id="wrap-team">
+        <label>Team Number *</label>
+        <input type="number" id="team-number" placeholder="e.g. 3" min="1" max="99" autocomplete="off"/>
+        <div class="error-msg">Please enter a valid team number.</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <span style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">* Required fields</span>
+      <button class="btn btn-primary" onclick="goToEvaluate()">Continue →</button>
+    </div>
+    <div style="margin-top:28px;border-top:1px solid var(--border);padding-top:20px">
+      <div class="section-title">Organizer Results</div>
+      <div class="admin-pin-wrap">
+        <div>
+          <label>Admin PIN</label>
+          <input type="password" id="admin-pin" placeholder="••••" style="max-width:140px"/>
+        </div>
+        <button class="btn btn-ghost" onclick="adminLogin()" style="margin-top:22px">View Results</button>
+      </div>
+      <p style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:8px">Default PIN: <code style="color:var(--cyan)">quantum2026</code></p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SCREEN 2: EVALUATE ═══ -->
+  <div class="card screen" id="screen-evaluate">
+    <a class="back-link" onclick="goBack('screen-identity')">← Back</a>
+    <div id="eval-header" class="sub-count">
+      <div><div class="num" id="eval-jury-name-display">—</div><div style="font-size:11px;color:var(--muted)">Jury Member</div></div>
+      <div style="margin-left:auto"><div class="num" id="eval-team-display">—</div><div style="font-size:11px;color:var(--muted)">Team #</div></div>
+    </div>
+    <div class="section-title">Evaluation Criteria</div>
+    <div class="criteria-list" id="criteria-list"></div>
+    <div class="form-row" style="margin-top:24px">
+      <label>Additional Comments (optional)</label>
+      <textarea id="eval-comments" placeholder="Write any feedback or observations…"></textarea>
+    </div>
+    <div class="btn-row">
+      <span id="stars-warning" style="font-family:var(--font-mono);font-size:12px;color:var(--red);display:none">⚠ Please rate all criteria.</span>
+      <button class="btn btn-primary" onclick="submitEvaluation()">Submit Evaluation ✓</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SCREEN 3: SUCCESS ═══ -->
+  <div class="card screen" id="screen-success">
+    <div style="text-align:center;padding:20px 0">
+      <div style="font-size:56px;margin-bottom:12px">✅</div>
+      <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Evaluation Submitted!</h2>
+      <p style="font-family:var(--font-mono);font-size:13px;color:var(--muted)" id="success-msg"></p>
+    </div>
+    <div class="btn-row" style="justify-content:center;gap:16px">
+      <button class="btn btn-ghost" onclick="goBack('screen-identity')">Evaluate Another Team</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SCREEN 4: RESULTS ═══ -->
+  <div class="card screen" id="screen-results">
+    <a class="back-link" onclick="goBack('screen-identity')">← Back to Login</a>
+    <div class="section-title">Results Dashboard</div>
+
+    <div id="winner-section" style="display:none"></div>
+
+    <div class="sub-count" id="results-summary"></div>
+
+    <div id="teams-results-list"></div>
+
+    <div class="export-row">
+      <button class="btn btn-ghost" onclick="exportCSV()" style="font-size:13px">⬇ Export CSV</button>
+      <button class="btn btn-danger" onclick="resetAllData()">🗑 Clear All Data</button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<div id="toast">✓ Submitted successfully!</div>
+
+<script>
+// ══════════════════════════════════
+//  DATA
+// ══════════════════════════════════
+const STORAGE_KEY = 'aqh_evaluations_v1';
+const ADMIN_PIN   = 'quantum2026'; // change as needed
+
+const CRITERIA = [
+  { id:'creativity',     label:'Creativity in Quantum Computing',   hint:'Novel use of quantum concepts' },
+  { id:'technical',      label:'Technical Implementation',          hint:'Correctness & complexity' },
+  { id:'timeManagement', label:'Time Management',                   hint:'Efficient use of allocated time' },
+  { id:'judgeInteraction',label:'Confident Judge Interaction',      hint:'Clarity in Q&A' },
+  { id:'teamWork',       label:'Team Work',                         hint:'Collaboration & role balance' },
+  { id:'problemSolution',label:'Clear Problem–Solution Flow',       hint:'Logical structure & narrative' },
+  { id:'researchDepth',  label:'Demonstrated Research Depth',       hint:'References & theoretical grounding' },
+  { id:'presentation',   label:'Presentation Best Practices',       hint:'Slides, delivery & engagement' },
+];
+
+let currentJury = '';
+let currentTeam = '';
+
+function loadData(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch(e){ return []; }
+}
+function saveData(arr){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+}
+
+// ══════════════════════════════════
+//  SCREENS
+// ══════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const prog = document.getElementById('progress-wrap');
+  const steps = {'screen-identity':1,'screen-evaluate':2,'screen-success':3};
+  if(steps[id]){
+    prog.style.display='block';
+    const n = steps[id];
+    [1,2,3].forEach(i=>{
+      document.getElementById('dot-'+i).classList.toggle('done',i<=n);
+    });
+    const labels = ['Identity','Evaluation','Submitted'];
+    document.getElementById('step-label').textContent = `Step ${n} of 3 — ${labels[n-1]}`;
+  } else { prog.style.display='none'; }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goBack(id){ showScreen(id); }
+
+// ══════════════════════════════════
+//  SCREEN 1 → 2
+// ══════════════════════════════════
+function goToEvaluate(){
+  const nameEl = document.getElementById('jury-name');
+  const teamEl = document.getElementById('team-number');
+  let ok = true;
+  setFieldError('wrap-name', !nameEl.value.trim());
+  setFieldError('wrap-team', !teamEl.value.trim() || isNaN(parseInt(teamEl.value)));
+  if(!nameEl.value.trim() || !teamEl.value.trim() || isNaN(parseInt(teamEl.value))) return;
+
+  currentJury = nameEl.value.trim();
+  currentTeam = parseInt(teamEl.value);
+
+  document.getElementById('eval-jury-name-display').textContent = currentJury;
+  document.getElementById('eval-team-display').textContent = 'Team ' + currentTeam;
+
+  buildCriteriaList();
+  showScreen('screen-evaluate');
+}
+function setFieldError(wrapId, isError){
+  document.getElementById(wrapId).classList.toggle('field-error', isError);
+}
+
+// ══════════════════════════════════
+//  BUILD CRITERIA STARS
+// ══════════════════════════════════
+function buildCriteriaList(){
+  const container = document.getElementById('criteria-list');
+  container.innerHTML = '';
+  CRITERIA.forEach(c=>{
+    const row = document.createElement('div');
+    row.className = 'criteria-row';
+    // stars: 1-5, rendered RTL trick via flex-row-reverse
+    let starsHTML = `<div class="stars" id="stars-${c.id}">`;
+    for(let v=5;v>=1;v--){
+      starsHTML += `<input type="radio" name="${c.id}" id="${c.id}_${v}" value="${v}"/>
+        <label for="${c.id}_${v}" title="${v} — ${scoreName(v)}">★</label>`;
+    }
+    starsHTML += `</div>`;
+    row.innerHTML = `
+      <div class="criteria-name">${c.label}<span>${c.hint}</span></div>
+      ${starsHTML}
+    `;
+    container.appendChild(row);
+  });
+}
+function scoreName(v){
+  return ['','Weak','Fair','Good','Very Good','Excellent'][v];
+}
+
+// ══════════════════════════════════
+//  SUBMIT
+// ══════════════════════════════════
+function submitEvaluation(){
+  const scores = {};
+  let allRated = true;
+  CRITERIA.forEach(c=>{
+    const checked = document.querySelector(`input[name="${c.id}"]:checked`);
+    if(!checked){ allRated=false; } else { scores[c.id] = parseInt(checked.value); }
+  });
+  if(!allRated){
+    document.getElementById('stars-warning').style.display='inline';
+    return;
+  }
+  document.getElementById('stars-warning').style.display='none';
+
+  const entry = {
+    id: Date.now(),
+    juryName: currentJury,
+    teamNumber: currentTeam,
+    timestamp: new Date().toISOString(),
+    scores,
+    comments: document.getElementById('eval-comments').value.trim(),
+  };
+
+  const data = loadData();
+  data.push(entry);
+  saveData(data);
+
+  const teamEntries = data.filter(e=>e.teamNumber===currentTeam);
+  document.getElementById('success-msg').textContent =
+    `Evaluation for Team ${currentTeam} recorded. ${teamEntries.length} jury vote(s) logged for this team.`;
+
+  showScreen('screen-success');
+  showToast('Evaluation submitted!');
+  updateHeaderSub();
+}
+
+// ══════════════════════════════════
+//  ADMIN
+// ══════════════════════════════════
+function adminLogin(){
+  const pin = document.getElementById('admin-pin').value;
+  if(pin !== ADMIN_PIN){
+    alert('Incorrect PIN. Please try again.');
+    return;
+  }
+  buildResultsScreen();
+  showScreen('screen-results');
+}
+
+function buildResultsScreen(){
+  const data = loadData();
+  const summary = document.getElementById('results-summary');
+  const list    = document.getElementById('teams-results-list');
+  const winnerSec = document.getElementById('winner-section');
+
+  if(!data.length){
+    summary.innerHTML = '<span class="num">0</span><span style="font-size:13px;color:var(--muted)">No submissions yet</span>';
+    list.innerHTML = `<div class="empty-state"><span class="icon">📭</span>No evaluations submitted yet.</div>`;
+    winnerSec.style.display='none';
+    return;
+  }
+
+  const juryNames = [...new Set(data.map(e=>e.juryName))];
+  const teamNums  = [...new Set(data.map(e=>e.teamNumber))].sort((a,b)=>a-b);
+
+  summary.innerHTML = `
+    <div><div class="num">${data.length}</div><div style="font-size:11px;color:var(--muted)">Total Submissions</div></div>
+    <div style="margin-left:16px"><div class="num">${teamNums.length}</div><div style="font-size:11px;color:var(--muted)">Teams Evaluated</div></div>
+    <div style="margin-left:16px"><div class="num">${juryNames.length}</div><div style="font-size:11px;color:var(--muted)">Jury Members</div></div>
+  `;
+
+  // Aggregate per team
+  const teams = teamNums.map(tn=>{
+    const entries = data.filter(e=>e.teamNumber===tn);
+    const avgScores = {};
+    let totalSum = 0;
+    CRITERIA.forEach(c=>{
+      const vals = entries.map(e=>e.scores[c.id]).filter(v=>v!=null);
+      const avg  = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+      avgScores[c.id] = avg;
+      totalSum += avg;
+    });
+    return {
+      teamNumber: tn,
+      entries,
+      avgScores,
+      totalAvg: totalSum / CRITERIA.length,
+      overallSum: totalSum,
+      jury: [...new Set(entries.map(e=>e.juryName))],
+    };
+  }).sort((a,b)=>b.overallSum - a.overallSum);
+
+  // Winner banner
+  if(teams.length){
+    const w = teams[0];
+    winnerSec.style.display='block';
+    winnerSec.innerHTML = `
+      <div class="winner-banner">
+        <span class="trophy">🏆</span>
+        <h2>Team ${w.teamNumber} — Leading</h2>
+        <p>Overall Score: ${w.overallSum.toFixed(2)} / ${CRITERIA.length * 5} &nbsp;·&nbsp; Avg per criterion: ${w.totalAvg.toFixed(2)}</p>
+      </div>
+    `;
+  }
+
+  // Team sections
+  list.innerHTML = '';
+  teams.forEach((t,i)=>{
+    const rank = i+1;
+    const badgeClass = rank===1?'gold':rank===2?'silver':rank===3?'bronze':'';
+    const pct = (t.overallSum / (CRITERIA.length*5))*100;
+
+    const sec = document.createElement('div');
+    sec.className='team-section';
+    sec.innerHTML = `
+      <div class="team-header" onclick="toggleTeam(this)">
+        <span class="rank-badge ${badgeClass}">${rank}</span>
+        <div>
+          <div class="team-name-big">Team ${t.teamNumber}</div>
+          <div class="team-num">${t.entries.length} evaluation(s)</div>
+        </div>
+        <div style="margin-left:auto;text-align:right">
+          <div style="font-family:var(--font-mono);font-size:20px;color:var(--cyan);font-weight:700">${t.overallSum.toFixed(1)}</div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--muted)">/ ${CRITERIA.length*5}</div>
+        </div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="team-detail">
+        <div class="score-bar-wrap" style="margin-bottom:12px">
+          <div class="score-bar"><div class="score-bar-fill" style="width:${pct}%"></div></div>
+          <div class="score-num">${pct.toFixed(0)}%</div>
+        </div>
+        <div class="criteria-breakdown">
+          ${CRITERIA.map(c=>`
+            <div class="cb-item">
+              <div class="cb-name">${c.label}</div>
+              <div class="cb-val">${t.avgScores[c.id].toFixed(2)}<span class="cb-max">/5</span></div>
+            </div>
+          `).join('')}
+        </div>
+        <div style="margin-top:14px">
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-bottom:6px">JURY MEMBERS</div>
+          <div class="jury-tags">${t.jury.map(j=>`<span class="jury-tag">${j}</span>`).join('')}</div>
+        </div>
+        ${t.entries.some(e=>e.comments) ? `
+        <div style="margin-top:14px">
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-bottom:6px">COMMENTS</div>
+          ${t.entries.filter(e=>e.comments).map(e=>`
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:8px;font-size:13px">
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--cyan);margin-bottom:4px">${e.juryName}</div>
+              ${e.comments}
+            </div>
+          `).join('')}
+        </div>` : ''}
+      </div>
+    `;
+    list.appendChild(sec);
+  });
+}
+
+function toggleTeam(header){
+  header.closest('.team-section').classList.toggle('open');
+}
+
+// ══════════════════════════════════
+//  EXPORT CSV
+// ══════════════════════════════════
+function exportCSV(){
+  const data = loadData();
+  if(!data.length){ alert('No data to export.'); return; }
+  const cols = ['Jury Name','Team','Timestamp',...CRITERIA.map(c=>c.label),'Total','Comments'];
+  const rows = data.map(e=>{
+    const scores = CRITERIA.map(c=>e.scores[c.id]||0);
+    const total  = scores.reduce((a,b)=>a+b,0);
+    return [e.juryName, e.teamNumber, e.timestamp, ...scores, total, `"${(e.comments||'').replace(/"/g,"'")}"`];
+  });
+  const csv = [cols.join(','), ...rows.map(r=>r.join(','))].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'aqh_results.csv';
+  a.click();
+}
+
+// ══════════════════════════════════
+//  RESET
+// ══════════════════════════════════
+function resetAllData(){
+  if(!confirm('Are you sure you want to delete ALL evaluation data? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  buildResultsScreen();
+  showToast('All data cleared.');
+}
+
+// ══════════════════════════════════
+//  TOAST
+// ══════════════════════════════════
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = '✓ ' + msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+// ══════════════════════════════════
+//  INIT
+// ══════════════════════════════════
+function updateHeaderSub(){
+  const data = loadData();
+  const teams = [...new Set(data.map(e=>e.teamNumber))].length;
+  document.getElementById('header-sub').textContent =
+    data.length ? `${data.length} evaluation(s) · ${teams} team(s) · ${[...new Set(data.map(e=>e.juryName))].length} jury member(s)` :
+    'No submissions yet — be the first to evaluate.';
+}
+
+// ── Enter key shortcuts
+document.addEventListener('DOMContentLoaded',()=>{
+  showScreen('screen-identity');
+  updateHeaderSub();
+  document.getElementById('jury-name').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('team-number').focus(); });
+  document.getElementById('team-number').addEventListener('keydown',e=>{ if(e.key==='Enter') goToEvaluate(); });
+  document.getElementById('admin-pin').addEventListener('keydown',e=>{ if(e.key==='Enter') adminLogin(); });
+});
+</script>
+</body>
+</html>
