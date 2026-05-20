@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<meta name="theme-color" content="#fafaf7"/>
+<title>Alexandria Quantum Hackathon — Jury</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  /* ═══════════════════════════════════════════════
+      DESIGN TOKENS — soft light theme, rounded
+     ═══════════════════════════════════════════════ */
+  :root {
+    --bg:           #fafaf7;
+    --card:         #ffffff;
+    --surface:      #f5f4ef;
+    --border:       #ebe9e2;
+    --border-strong:#d8d5cd;
+
+    --text:         #1a1a1a;
+    --text-soft:    #4a4a4a;
+    --muted:        #8a8a85;
+
+    --primary:      #5b5fc7;    /* calm indigo */
+    --primary-dark: #4a4eb5;
+    --primary-soft: #ece9fb;
+    --primary-tint: #f5f3ff;
+
+    --success:      #2f9e6e;
+    --success-soft: #e0f5eb;
+    --warning:      #c47f1a;
+    --warning-soft: #fbf1de;
+    --error:        #c84d4d;
+    --error-soft:   #fbe9e9;
+    --amber:        #d49021;
+
+    --radius-sm:    10px;
+    --radius:       14px;
+    --radius-lg:    20px;
+    --radius-xl:    28px;
+    --radius-pill:  9999px;
+
+    --shadow-xs:    0 1px 2px rgba(20,20,30,.04);
+    --shadow-sm:    0 2px 6px rgba(20,20,30,.04), 0 1px 2px rgba(20,20,30,.03);
+    --shadow:       0 4px 16px rgba(20,20,30,.05), 0 1px 3px rgba(20,20,30,.03);
+    --shadow-lg:    0 12px 40px rgba(20,20,30,.06), 0 2px 6px rgba(20,20,30,.04);
+
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body:    'Manrope', system-ui, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* ─── soft decorative blobs ─── */
+  body::before, body::after {
+    content: ''; position: fixed; z-index: 0; pointer-events: none;
+    width: 320px; height: 320px; border-radius: 50%;
+    filter: blur(80px); opacity: .35;
+  }
+  body::before { background: var(--primary-soft); top: -120px; right: -120px; }
+  body::after  { background: #fef0e7; bottom: -120px; left: -120px; }
+
+  /* ═══════════════════════════════════════════════
+      LAYOUT
+     ═══════════════════════════════════════════════ */
+  #app {
+    position: relative; z-index: 1;
+    max-width: 520px; margin: 0 auto;
+    padding: 24px 18px 80px;
+    min-height: 100vh; min-height: 100dvh;
+  }
+  @media (min-width: 768px) {
+    #app { padding: 48px 24px 80px; max-width: 600px; }
+  }
+
+  /* ─── header ─── */
+  .header { text-align: center; margin-bottom: 28px; }
+  .header-mark {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--card); border: 1px solid var(--border);
+    padding: 6px 14px; border-radius: var(--radius-pill);
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    color: var(--primary); text-transform: uppercase;
+    margin-bottom: 16px; box-shadow: var(--shadow-xs);
+  }
+  .header-mark .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+  .header h1 {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: clamp(24px, 6vw, 32px); line-height: 1.15;
+    color: var(--text); letter-spacing: -0.5px;
+  }
+  .header h1 em { font-style: italic; color: var(--primary); font-weight: 500; }
+  .header p {
+    margin-top: 8px; color: var(--muted); font-size: 14px;
+  }
+
+  /* ─── progress bar ─── */
+  .progress { display: flex; gap: 6px; margin-bottom: 20px; padding: 0 4px; }
+  .progress-dot {
+    flex: 1; height: 4px; background: var(--border);
+    border-radius: var(--radius-pill); transition: background .3s;
+  }
+  .progress-dot.done { background: var(--primary); }
+
+  /* ─── card ─── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 28px 22px;
+    box-shadow: var(--shadow);
+  }
+  @media (min-width: 600px) {
+    .card { padding: 36px 32px; }
+  }
+
+  /* ─── screens ─── */
+  .screen { display: none; animation: fadeIn .35s cubic-bezier(.2,.8,.2,1); }
+  .screen.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ─── section labels ─── */
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.8px;
+    color: var(--muted); text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: var(--font-display); font-size: 22px; font-weight: 600;
+    letter-spacing: -0.3px; margin-bottom: 6px;
+  }
+  .section-sub {
+    color: var(--muted); font-size: 14px; margin-bottom: 24px;
+  }
+
+  /* ─── form fields ─── */
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block; font-size: 13px; font-weight: 600;
+    color: var(--text-soft); margin-bottom: 8px;
+  }
+  .field input, .field textarea {
+    width: 100%; font-family: var(--font-body); font-size: 16px;
+    background: var(--surface); border: 1.5px solid transparent;
+    color: var(--text); padding: 14px 16px;
+    border-radius: var(--radius); outline: none;
+    transition: all .2s; -webkit-appearance: none; appearance: none;
+  }
+  .field input:focus, .field textarea:focus {
+    background: var(--card); border-color: var(--primary);
+    box-shadow: 0 0 0 4px var(--primary-soft);
+  }
+  .field textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+  .field.error input, .field.error textarea {
+    border-color: var(--error); background: var(--error-soft);
+  }
+  .field-error-msg {
+    color: var(--error); font-size: 12px; margin-top: 6px;
+    display: none; font-weight: 500;
+  }
+  .field.error .field-error-msg { display: block; }
+
+  /* ─── buttons ─── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: var(--font-body); font-size: 15px; font-weight: 600;
+    padding: 14px 24px; border: none; cursor: pointer;
+    border-radius: var(--radius); transition: all .2s;
+    min-height: 48px;
+  }
+  .btn-primary {
+    background: var(--primary); color: white;
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-primary:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+  .btn-ghost {
+    background: var(--surface); color: var(--text-soft);
+  }
+  .btn-ghost:hover { background: var(--border); }
+
+  .btn-outline {
+    background: transparent; color: var(--primary);
+    border: 1.5px solid var(--primary-soft);
+  }
+  .btn-outline:hover { background: var(--primary-tint); border-color: var(--primary); }
+
+  .btn-block { width: 100%; }
+  .btn-sm { padding: 8px 14px; font-size: 13px; min-height: 36px; border-radius: var(--radius-sm); }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+  /* ─── identity card top ─── */
+  .identity-pill {
+    display: flex; gap: 14px; align-items: center;
+    padding: 14px 18px; background: var(--primary-tint);
+    border-radius: var(--radius-lg); margin-bottom: 24px;
+  }
+  .identity-pill .avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--primary); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px; flex-shrink: 0;
+  }
+  .identity-pill .info { flex: 1; min-width: 0; }
+  .identity-pill .info .name {
+    font-weight: 600; font-size: 15px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .identity-pill .info .team {
+    font-size: 12px; color: var(--muted); margin-top: 2px;
+  }
+
+  /* ─── rating buttons (segmented control) ─── */
+  .rating-group {
+    padding: 18px 0; border-bottom: 1px solid var(--border);
+  }
+  .rating-group:last-child { border-bottom: none; }
+  .rating-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 12px; gap: 12px;
+  }
+  .rating-title {
+    font-weight: 600; font-size: 15px; color: var(--text);
+    line-height: 1.35;
+  }
+  .rating-hint {
+    font-size: 12px; color: var(--muted); margin-top: 2px;
+    font-weight: 400;
+  }
+  .rating-score {
+    font-family: var(--font-display); font-size: 28px; font-weight: 600;
+    color: var(--muted); min-width: 36px; text-align: right;
+    line-height: 1; flex-shrink: 0; transition: color .2s;
+  }
+  .rating-score.set { color: var(--primary); }
+
+  .rating-buttons {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 6px; margin-bottom: 6px;
+  }
+  .rating-btn {
+    background: var(--surface); color: var(--text-soft);
+    border: 1.5px solid transparent; border-radius: var(--radius);
+    height: 48px; font-family: var(--font-body); font-size: 16px; font-weight: 600;
+    cursor: pointer; transition: all .15s;
+  }
+  .rating-btn:hover { background: var(--border); }
+  .rating-btn.active {
+    background: var(--primary); color: white; border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(91,95,199,.25);
+    transform: scale(1.02);
+  }
+  .rating-feedback {
+    font-size: 12px; color: var(--muted); text-align: center;
+    min-height: 16px; font-weight: 500;
+  }
+  .rating-feedback.set { color: var(--primary); }
+
+  /* ─── success screen ─── */
+  .success-circle {
+    width: 88px; height: 88px; border-radius: 50%;
+    background: var(--success-soft); color: var(--success);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px; font-size: 40px;
+    animation: pop .5s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes pop {
+    from { transform: scale(0); }
+    50%  { transform: scale(1.15); }
+    to   { transform: scale(1); }
+  }
+  .success-text { text-align: center; }
+  .success-text h2 {
+    font-family: var(--font-display); font-size: 24px; font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .success-text p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+  /* ─── results screen ─── */
+  .results-meta {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    padding: 16px 20px; background: var(--surface);
+    border-radius: var(--radius); margin-bottom: 20px;
+  }
+  .meta-item .meta-num {
+    font-family: var(--font-display); font-size: 24px; font-weight: 600;
+    color: var(--primary); line-height: 1;
+  }
+  .meta-item .meta-label {
+    font-size: 11px; color: var(--muted); margin-top: 4px;
+    letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
+  }
+  .meta-item.live {
+    margin-left: auto; display: flex; align-items: center; gap: 8px;
+    background: var(--success-soft); padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 12px; font-weight: 600; color: var(--success);
+  }
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--success); animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .5; transform: scale(1.3); }
+  }
+
+  /* ─── winner banner ─── */
+  .winner-banner {
+    background: linear-gradient(135deg, #fef3c7 0%, var(--primary-tint) 100%);
+    border-radius: var(--radius-lg); padding: 22px;
+    text-align: center; margin-bottom: 24px;
+    border: 1px solid var(--warning-soft);
+  }
+  .winner-banner .trophy {
+    font-size: 36px; display: block; margin-bottom: 8px;
+  }
+  .winner-banner h3 {
+    font-family: var(--font-display); font-size: 22px; font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .winner-banner p {
+    font-size: 13px; color: var(--text-soft);
+  }
+
+  /* ─── team result card ─── */
+  .team-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); margin-bottom: 12px;
+    overflow: hidden; transition: all .2s;
+  }
+  .team-card:hover { border-color: var(--border-strong); }
+  .team-card.expanded { box-shadow: var(--shadow); }
+  .team-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 18px; cursor: pointer; user-select: none;
+  }
+  .rank {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+    background: var(--surface); color: var(--text-soft);
+    flex-shrink: 0;
+  }
+  .rank.gold   { background: linear-gradient(135deg, #fde68a, #fbbf24); color: #78350f; }
+  .rank.silver { background: linear-gradient(135deg, #e5e7eb, #cbd5e0); color: #374151; }
+  .rank.bronze { background: linear-gradient(135deg, #fed7aa, #fb923c); color: #7c2d12; }
+
+  .team-info { flex: 1; min-width: 0; }
+  .team-name { font-weight: 600; font-size: 16px; }
+  .team-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .team-score {
+    text-align: right; flex-shrink: 0;
+  }
+  .team-score .score-num {
+    font-family: var(--font-display); font-size: 22px; font-weight: 600;
+    color: var(--primary); line-height: 1;
+  }
+  .team-score .score-max {
+    font-size: 11px; color: var(--muted); margin-top: 2px;
+  }
+  .team-chevron {
+    color: var(--muted); transition: transform .2s; font-size: 12px;
+  }
+  .team-card.expanded .team-chevron { transform: rotate(180deg); }
+
+  .team-detail {
+    display: none; padding: 0 18px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .team-card.expanded .team-detail { display: block; }
+  .progress-bar {
+    height: 6px; background: var(--surface); border-radius: var(--radius-pill);
+    overflow: hidden; margin: 14px 0 18px;
+  }
+  .progress-bar-fill {
+    height: 100%; background: var(--primary);
+    border-radius: var(--radius-pill); transition: width .8s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .criteria-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .criteria-cell {
+    background: var(--surface); border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+  .criteria-cell .cc-name { font-size: 11px; color: var(--muted); font-weight: 600; }
+  .criteria-cell .cc-val {
+    font-family: var(--font-display); font-size: 18px; font-weight: 600;
+    color: var(--text); margin-top: 2px;
+  }
+  .criteria-cell .cc-val small { color: var(--muted); font-size: 11px; }
+
+  .jury-list {
+    margin-top: 14px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .jury-pill {
+    background: var(--primary-tint); color: var(--primary-dark);
+    padding: 4px 10px; border-radius: var(--radius-pill);
+    font-size: 11px; font-weight: 600;
+  }
+
+  .comment-block {
+    background: var(--surface); border-radius: var(--radius);
+    padding: 12px 14px; margin-top: 10px; font-size: 13px;
+    color: var(--text-soft); line-height: 1.5;
+  }
+  .comment-block .by {
+    font-weight: 600; color: var(--primary); font-size: 11px;
+    margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* ─── back link ─── */
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: 13px; font-weight: 600;
+    font-family: var(--font-body); margin-bottom: 18px;
+    padding: 6px 10px; margin-left: -10px;
+    border-radius: var(--radius-sm); transition: all .15s;
+  }
+  .back-link:hover { background: var(--surface); color: var(--text); }
+
+  /* ─── admin login mini section ─── */
+  .admin-mini {
+    margin-top: 20px; padding: 18px;
+    background: var(--surface); border-radius: var(--radius-lg);
+  }
+  .admin-mini-title {
+    font-size: 12px; font-weight: 700; color: var(--muted);
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .admin-row { display: flex; gap: 8px; }
+  .admin-row input {
+    flex: 1; padding: 12px 14px; background: var(--card);
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    font-family: var(--font-body); font-size: 15px; outline: none;
+  }
+  .admin-row input:focus { border-color: var(--primary); }
+
+  /* ─── toast ─── */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px); z-index: 999;
+    background: var(--text); color: white;
+    padding: 12px 22px; border-radius: var(--radius-pill);
+    font-size: 14px; font-weight: 600;
+    opacity: 0; transition: all .3s; pointer-events: none;
+    box-shadow: var(--shadow-lg);
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #toast.error { background: var(--error); }
+
+  /* ─── loading & spinner ─── */
+  .loading {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--muted); font-size: 13px; padding: 20px;
+    justify-content: center; width: 100%;
+  }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%; animation: spin .8s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ─── empty state ─── */
+  .empty {
+    text-align: center; padding: 40px 20px; color: var(--muted);
+  }
+  .empty-icon { font-size: 40px; margin-bottom: 10px; }
+  .empty p { font-size: 14px; }
+
+  /* ─── alert ─── */
+  .alert {
+    padding: 14px 16px; border-radius: var(--radius);
+    font-size: 13px; margin-bottom: 18px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .alert-error { background: var(--error-soft); color: var(--error); }
+  .alert-warning { background: var(--warning-soft); color: var(--warning); }
+  .alert .icon { font-size: 16px; flex-shrink: 0; }
+
+  /* helpers */
+  .submit-bar { margin-top: 24px; }
+  .text-center { text-align: center; }
+  .mt-2 { margin-top: 16px; }
+  .small-note { font-size: 12px; color: var(--muted); font-weight: 400; }
+  code { background: var(--surface); padding: 2px 6px; border-radius: 4px; font-size: 12px; font-family: ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-mark"><span class="dot"></span>Alexandria · 2026</div>
+    <h1>Mini Quantum<br/><em>Hackathon</em> Jury</h1>
+    <p id="header-sub">Loading…</p>
+  </header>
+
+  <!-- PROGRESS -->
+  <div class="progress" id="progress" style="display:none">
+    <div class="progress-dot" id="dot-1"></div>
+    <div class="progress-dot" id="dot-2"></div>
+    <div class="progress-dot" id="dot-3"></div>
+  </div>
+
+  <!-- ═══════════════ SCREEN 1: IDENTITY ═══════════════ -->
+  <div class="screen active" id="screen-identity">
+    <div class="card">
+      <div class="section-label">Step 1</div>
+      <div class="section-title">Who are you evaluating?</div>
+      <div class="section-sub">Enter your name and the team's number.</div>
+
+      <div class="field" id="wrap-name">
+        <label for="jury-name">Your Full Name</label>
+        <input type="text" id="jury-name" placeholder="e.g. Dr. Ahmed Hassan" autocomplete="name"/>
+        <div class="field-error-msg">Please enter your name.</div>
+      </div>
+
+      <div class="field" id="wrap-team">
+        <label for="team-number">Team Number</label>
+        <input type="number" id="team-number" placeholder="e.g. 3" inputmode="numeric" min="1" max="999"/>
+        <div class="field-error-msg">Please enter a valid team number.</div>
+      </div>
+
+      <button class="btn btn-primary btn-block submit-bar" onclick="goToEvaluate()">
+        Continue →
+      </button>
+
+      <div class="admin-mini">
+        <div class="admin-mini-title">🔒 Organizer Access</div>
+        <div class="admin-row">
+          <input type="password" id="admin-pin" placeholder="Enter admin PIN"/>
+          <button class="btn btn-outline btn-sm" onclick="adminLogin()" id="admin-btn">View Results</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SCREEN 2: EVALUATE ═══════════════ -->
+  <div class="screen" id="screen-evaluate">
+    <div class="card">
+      <button class="back-link" onclick="goBack('screen-identity')">← Change team</button>
+
+      <div class="identity-pill">
+        <div class="avatar" id="avatar-letter">?</div>
+        <div class="info">
+          <div class="name" id="display-name">—</div>
+          <div class="team" id="display-team">—</div>
+        </div>
+      </div>
+
+      <div class="section-label">Step 2</div>
+      <div class="section-title">Score each criterion</div>
+      <div class="section-sub">1 = Weak, 5 = Excellent</div>
+
+      <div id="criteria-list"></div>
+
+      <div class="field" style="margin-top: 24px;">
+        <label for="comments">Comments <span class="small-note">(optional)</span></label>
+        <textarea id="comments" placeholder="Any feedback you'd like to share…"></textarea>
+      </div>
+
+      <div id="submit-alert"></div>
+      <button class="btn btn-primary btn-block submit-bar" onclick="submitEvaluation()" id="submit-btn">
+        <span id="submit-btn-text">Submit Evaluation</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SCREEN 3: SUCCESS ═══════════════ -->
+  <div class="screen" id="screen-success">
+    <div class="card">
+      <div class="success-circle">✓</div>
+      <div class="success-text">
+        <h2>Evaluation Submitted</h2>
+        <p id="success-msg">Thank you for your evaluation.</p>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="evaluateAnotherTeam()">
+        Evaluate Another Team
+      </button>
+      <button class="btn btn-ghost btn-block" onclick="goBack('screen-identity')" style="margin-top: 10px;">
+        Done for Now
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SCREEN 4: RESULTS ═══════════════ -->
+  <div class="screen" id="screen-results">
+    <div class="card">
+      <button class="back-link" onclick="exitResults()">← Exit</button>
+
+      <div class="section-label">Live Dashboard</div>
+      <div class="section-title">Results</div>
+
+      <div class="results-meta" id="results-meta">
+        <div class="loading"><div class="spinner"></div>Loading…</div>
+      </div>
+
+      <div id="winner-area"></div>
+      <div id="teams-area"></div>
+
+      <div class="btn-row mt-2">
+        <button class="btn btn-outline btn-sm" onclick="refreshResults()">↻ Refresh now</button>
+        <button class="btn btn-outline btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SCREEN: NOT CONFIGURED ═══════════════ -->
+  <div class="screen" id="screen-not-configured">
+    <div class="card">
+      <div class="section-label">⚠ Setup required</div>
+      <div class="section-title">Backend not configured</div>
+      <div class="section-sub">
+        Open <code>index.html</code> and set the <code>API_URL</code> constant to your deployed Google Apps Script Web App URL.
+      </div>
+      <div class="alert alert-warning">
+        <span class="icon">📘</span>
+        <div>Follow the steps in <code>SETUP.md</code> to deploy the backend.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  🔧 CONFIGURATION — paste your deployed Apps Script URL here
+// ═══════════════════════════════════════════════════════════════
+const API_URL = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
+const REFRESH_INTERVAL = 8000; // ms — auto-refresh on results screen
+
+// ═══════════════════════════════════════════════════════════════
+//  CRITERIA
+// ═══════════════════════════════════════════════════════════════
+const CRITERIA = [
+  { id:'creativity',      label:'Creativity in Quantum Computing', hint:'Novel use of quantum concepts' },
+  { id:'technical',       label:'Technical Implementation',         hint:'Correctness & complexity' },
+  { id:'timeManagement',  label:'Time Management',                  hint:'Efficient use of time' },
+  { id:'judgeInteraction',label:'Confident Judge Interaction',      hint:'Clarity in Q&A' },
+  { id:'teamWork',        label:'Team Work',                        hint:'Collaboration & balance' },
+  { id:'problemSolution', label:'Clear Problem–Solution Flow',      hint:'Logical narrative' },
+  { id:'researchDepth',   label:'Demonstrated Research Depth',      hint:'References & grounding' },
+  { id:'presentation',    label:'Presentation Best Practices',      hint:'Slides & delivery' },
+];
+
+const SCORE_LABELS = ['', 'Weak', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+// ═══════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════
+let state = {
+  juryName: '',
+  teamNumber: null,
+  scores: {},
+  refreshTimer: null,
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  API
+// ═══════════════════════════════════════════════════════════════
+async function apiGet() {
+  const sep = API_URL.includes('?') ? '&' : '?';
+  const url = API_URL + sep + 'action=list&_=' + Date.now();
+  const r = await fetch(url, { method: 'GET' });
+  if (!r.ok) throw new Error('Network error');
+  return await r.json();
+}
+async function apiPost(payload) {
+  const r = await fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+  });
+  if (!r.ok) throw new Error('Network error');
+  return await r.json();
+}
+function isConfigured() {
+  return API_URL && !API_URL.includes('PASTE_YOUR') && API_URL.startsWith('http');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SCREEN ROUTING
+// ═══════════════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+
+  const steps = { 'screen-identity': 1, 'screen-evaluate': 2, 'screen-success': 3 };
+  const progress = document.getElementById('progress');
+  if (steps[id]) {
+    progress.style.display = 'flex';
+    [1, 2, 3].forEach(i => {
+      document.getElementById('dot-' + i).classList.toggle('done', i <= steps[id]);
+    });
+  } else {
+    progress.style.display = 'none';
+  }
+
+  if (id !== 'screen-results' && state.refreshTimer) {
+    clearInterval(state.refreshTimer);
+    state.refreshTimer = null;
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function goBack(id) { showScreen(id); }
+
+// ═══════════════════════════════════════════════════════════════
+//  IDENTITY → EVALUATE
+// ═══════════════════════════════════════════════════════════════
+function goToEvaluate() {
+  const nameEl = document.getElementById('jury-name');
+  const teamEl = document.getElementById('team-number');
+  const name = nameEl.value.trim();
+  const team = parseInt(teamEl.value);
+
+  setFieldError('wrap-name', !name);
+  setFieldError('wrap-team', !team || team < 1);
+  if (!name || !team || team < 1) return;
+
+  if (!isConfigured()) { showScreen('screen-not-configured'); return; }
+
+  state.juryName = name;
+  state.teamNumber = team;
+  state.scores = {};
+
+  document.getElementById('display-name').textContent = name;
+  document.getElementById('display-team').textContent = 'Evaluating Team #' + team;
+  document.getElementById('avatar-letter').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('submit-alert').innerHTML = '';
+  document.getElementById('comments').value = '';
+
+  buildCriteria();
+  showScreen('screen-evaluate');
+}
+
+function setFieldError(id, isError) {
+  document.getElementById(id).classList.toggle('error', isError);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  BUILD CRITERIA UI
+// ═══════════════════════════════════════════════════════════════
+function buildCriteria() {
+  const list = document.getElementById('criteria-list');
+  list.innerHTML = '';
+  CRITERIA.forEach(c => {
+    const group = document.createElement('div');
+    group.className = 'rating-group';
+    group.innerHTML = `
+      <div class="rating-header">
+        <div>
+          <div class="rating-title">${c.label}</div>
+          <div class="rating-hint">${c.hint}</div>
+        </div>
+        <div class="rating-score" id="score-${c.id}">—</div>
+      </div>
+      <div class="rating-buttons" id="buttons-${c.id}">
+        ${[1,2,3,4,5].map(v => `<button class="rating-btn" data-val="${v}" onclick="setScore('${c.id}', ${v})">${v}</button>`).join('')}
+      </div>
+      <div class="rating-feedback" id="feedback-${c.id}">Tap to rate</div>
+    `;
+    list.appendChild(group);
+  });
+}
+
+function setScore(criterionId, value) {
+  state.scores[criterionId] = value;
+  document.querySelectorAll(`#buttons-${criterionId} .rating-btn`).forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.val) === value);
+  });
+  const scoreEl = document.getElementById('score-' + criterionId);
+  scoreEl.textContent = value;
+  scoreEl.classList.add('set');
+  const fb = document.getElementById('feedback-' + criterionId);
+  fb.textContent = SCORE_LABELS[value];
+  fb.classList.add('set');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SUBMIT
+// ═══════════════════════════════════════════════════════════════
+async function submitEvaluation() {
+  const missing = CRITERIA.filter(c => !state.scores[c.id]);
+  if (missing.length) {
+    showAlert(`Please rate all ${missing.length} remaining criteria.`, 'error');
+    document.getElementById('buttons-' + missing[0].id).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const submitBtn = document.getElementById('submit-btn');
+  const submitText = document.getElementById('submit-btn-text');
+  submitBtn.disabled = true;
+  submitText.innerHTML = '<span class="spinner" style="border-color: rgba(255,255,255,.3); border-top-color: white;"></span> Submitting…';
+  document.getElementById('submit-alert').innerHTML = '';
+
+  try {
+    const result = await apiPost({
+      juryName: state.juryName,
+      teamNumber: state.teamNumber,
+      scores: state.scores,
+      comments: document.getElementById('comments').value.trim(),
+    });
+
+    if (!result.success) {
+      if (result.error === 'duplicate') {
+        showAlert(result.message || 'You already evaluated this team.', 'warning');
+      } else {
+        showAlert(result.error || 'Submission failed. Please try again.', 'error');
+      }
+      submitBtn.disabled = false;
+      submitText.textContent = 'Submit Evaluation';
+      return;
+    }
+
+    document.getElementById('success-msg').textContent =
+      `Your evaluation for Team ${state.teamNumber} has been recorded.`;
+    showScreen('screen-success');
+    showToast('✓ Submitted');
+  } catch {
+    showAlert('Could not connect. Check your network and try again.', 'error');
+    submitBtn.disabled = false;
+    submitText.textContent = 'Submit Evaluation';
+  }
+}
+
+function showAlert(msg, type='error') {
+  const cls = type === 'error' ? 'alert-error' : 'alert-warning';
+  const icon = type === 'error' ? '⚠' : 'ℹ';
+  document.getElementById('submit-alert').innerHTML =
+    `<div class="alert ${cls}"><span class="icon">${icon}</span><div>${msg}</div></div>`;
+}
+
+function evaluateAnotherTeam() {
+  state.scores = {};
+  document.getElementById('team-number').value = '';
+  document.getElementById('comments').value = '';
+  showScreen('screen-identity');
+  setTimeout(() => document.getElementById('team-number').focus(), 300);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ADMIN
+// ═══════════════════════════════════════════════════════════════
+async function adminLogin() {
+  if (!isConfigured()) { showScreen('screen-not-configured'); return; }
+  const pin = document.getElementById('admin-pin').value.trim();
+  if (!pin) { showToast('Enter the PIN first', 'error'); return; }
+
+  const btn = document.getElementById('admin-btn');
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+  try {
+    const r = await apiPost({ action: 'verify-admin', pin });
+    if (r.success) {
+      document.getElementById('admin-pin').value = '';
+      showScreen('screen-results');
+      startResultsLive();
+    } else {
+      showToast('Incorrect PIN', 'error');
+    }
+  } catch {
+    showToast('Connection error', 'error');
+  }
+  btn.disabled = false;
+  btn.textContent = 'View Results';
+}
+
+function exitResults() {
+  if (state.refreshTimer) { clearInterval(state.refreshTimer); state.refreshTimer = null; }
+  showScreen('screen-identity');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RESULTS — fetch + render + auto-refresh
+// ═══════════════════════════════════════════════════════════════
+function startResultsLive() {
+  refreshResults();
+  if (state.refreshTimer) clearInterval(state.refreshTimer);
+  state.refreshTimer = setInterval(refreshResults, REFRESH_INTERVAL);
+}
+
+async function refreshResults() {
+  try {
+    const r = await apiGet();
+    if (!r.success) throw new Error(r.error || 'Failed');
+    renderResults(r.data || []);
+  } catch {
+    document.getElementById('results-meta').innerHTML =
+      `<div class="alert alert-error" style="margin:0;width:100%"><span class="icon">⚠</span><div>Could not load results.</div></div>`;
+  }
+}
+
+function renderResults(data) {
+  const meta = document.getElementById('results-meta');
+  const winnerArea = document.getElementById('winner-area');
+  const teamsArea = document.getElementById('teams-area');
+
+  if (!data.length) {
+    meta.innerHTML = `
+      <div class="meta-item">
+        <div class="meta-num">0</div>
+        <div class="meta-label">Submissions</div>
+      </div>
+      <div class="meta-item live">
+        <div class="live-dot"></div>Live · auto-refresh
+      </div>`;
+    winnerArea.innerHTML = '';
+    teamsArea.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📭</div>
+        <p>No evaluations yet.<br/>Results appear as jurors submit.</p>
+      </div>`;
+    return;
+  }
+
+  const teamNums = [...new Set(data.map(e => e.teamNumber))].sort((a,b)=>a-b);
+  const juryNames = [...new Set(data.map(e => e.juryName))];
+
+  meta.innerHTML = `
+    <div class="meta-item">
+      <div class="meta-num">${data.length}</div>
+      <div class="meta-label">Submissions</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-num">${teamNums.length}</div>
+      <div class="meta-label">Teams</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-num">${juryNames.length}</div>
+      <div class="meta-label">Jurors</div>
+    </div>
+    <div class="meta-item live">
+      <div class="live-dot"></div>Live
+    </div>`;
+
+  const teams = teamNums.map(tn => {
+    const entries = data.filter(e => e.teamNumber === tn);
+    const avgScores = {};
+    let totalAvg = 0;
+    CRITERIA.forEach(c => {
+      const vals = entries.map(e => e.scores[c.id]).filter(v => v != null);
+      const avg = vals.length ? vals.reduce((a,b)=>a+b,0) / vals.length : 0;
+      avgScores[c.id] = avg;
+      totalAvg += avg;
+    });
+    return {
+      teamNumber: tn,
+      entries,
+      avgScores,
+      totalAvg,
+      maxTotal: CRITERIA.length * 5,
+      juryList: [...new Set(entries.map(e => e.juryName))],
+    };
+  }).sort((a,b) => b.totalAvg - a.totalAvg);
+
+  const winner = teams[0];
+  winnerArea.innerHTML = `
+    <div class="winner-banner">
+      <span class="trophy">🏆</span>
+      <h3>Team ${winner.teamNumber} — Leading</h3>
+      <p>${winner.totalAvg.toFixed(2)} / ${winner.maxTotal} · ${winner.entries.length} evaluation${winner.entries.length>1?'s':''}</p>
+    </div>`;
+
+  teamsArea.innerHTML = teams.map((t, i) => {
+    const rank = i + 1;
+    const rankClass = rank===1?'gold':rank===2?'silver':rank===3?'bronze':'';
+    const pct = (t.totalAvg / t.maxTotal) * 100;
+    return `
+      <div class="team-card" onclick="this.classList.toggle('expanded')">
+        <div class="team-row">
+          <div class="rank ${rankClass}">${rank}</div>
+          <div class="team-info">
+            <div class="team-name">Team ${t.teamNumber}</div>
+            <div class="team-meta">${t.entries.length} eval${t.entries.length>1?'s':''} · ${t.juryList.length} juror${t.juryList.length>1?'s':''}</div>
+          </div>
+          <div class="team-score">
+            <div class="score-num">${t.totalAvg.toFixed(1)}</div>
+            <div class="score-max">/ ${t.maxTotal}</div>
+          </div>
+          <span class="team-chevron">▼</span>
+        </div>
+        <div class="team-detail">
+          <div class="progress-bar"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+          <div class="criteria-grid">
+            ${CRITERIA.map(c => `
+              <div class="criteria-cell">
+                <div class="cc-name">${c.label}</div>
+                <div class="cc-val">${t.avgScores[c.id].toFixed(2)} <small>/ 5</small></div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="jury-list">
+            ${t.juryList.map(j => `<span class="jury-pill">${escapeHtml(j)}</span>`).join('')}
+          </div>
+          ${t.entries.filter(e=>e.comments).map(e => `
+            <div class="comment-block">
+              <div class="by">${escapeHtml(e.juryName)}</div>
+              ${escapeHtml(e.comments)}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  EXPORT CSV
+// ═══════════════════════════════════════════════════════════════
+async function exportCSV() {
+  try {
+    const r = await apiGet();
+    if (!r.success || !r.data.length) { showToast('No data to export', 'error'); return; }
+    const cols = ['Timestamp','Jury','Team',...CRITERIA.map(c=>c.label),'Total','Comments'];
+    const rows = r.data.map(e => [
+      e.timestamp, `"${e.juryName}"`, e.teamNumber,
+      ...CRITERIA.map(c => e.scores[c.id]),
+      e.total, `"${(e.comments||'').replace(/"/g,"'")}"`
+    ]);
+    const csv = [cols.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'aqh_results_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+    showToast('✓ Downloaded');
+  } catch {
+    showToast('Export failed', 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════════════
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = type === 'error' ? 'show error' : 'show';
+  setTimeout(() => t.className = '', 2400);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  showScreen('screen-identity');
+
+  if (isConfigured()) {
+    apiGet().then(r => {
+      if (r.success) {
+        const n = r.data.length;
+        document.getElementById('header-sub').textContent =
+          n ? `${n} evaluation${n>1?'s':''} submitted so far` : 'Be the first to submit';
+      }
+    }).catch(() => {
+      document.getElementById('header-sub').textContent = 'Welcome — please log in';
+    });
+  } else {
+    document.getElementById('header-sub').textContent = '⚠ Backend not configured — see SETUP.md';
+  }
+
+  document.getElementById('jury-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('team-number').focus();
+  });
+  document.getElementById('team-number').addEventListener('keydown', e => {
+    if (e.key === 'Enter') goToEvaluate();
+  });
+  document.getElementById('admin-pin').addEventListener('keydown', e => {
+    if (e.key === 'Enter') adminLogin();
+  });
+});
+</script>
+</body>
+</html>
